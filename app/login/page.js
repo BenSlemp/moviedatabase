@@ -68,7 +68,7 @@ export default function Login() {
 
       {/* Signup Link */}
       <p className="mt-4 text-gray-700 dark:text-gray-300">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{' '}
         <span
           className="text-blue-500 cursor-pointer"
           onClick={() => router.push('/signup')}
