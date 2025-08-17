@@ -1,68 +1,100 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, createUserWithEmailAndPassword } from '../../lib/firebase';
-import MovieFinderLoggedOut from '../../components/MovieFinderLoggedOut'; // Import the logged-out component
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebase'; // your firebase.js
 
 export default function Signup() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(null);
-  const router = useRouter();
+  const [error, setError] = useState('');
+  const [isDark, setIsDark] = useState(false);
+
+  // Load dark mode preference from localStorage
+  useEffect(() => {
+    const dark = localStorage.getItem('darkMode') === 'true';
+    setIsDark(dark);
+    document.documentElement.classList.toggle('dark', dark);
+  }, []);
+
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    const newDark = !isDark;
+    setIsDark(newDark);
+    localStorage.setItem('darkMode', newDark);
+    document.documentElement.classList.toggle('dark', newDark);
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
     try {
-      // Create a new user with email and password
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push('/login'); // Redirect to login page after successful sign-up
-    } catch (error) {
-      setErrorMessage(error.message); // Show error message if signup fails
+      router.push('/home');
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-8">
-      {/* Display the MovieFinderLoggedOut component */}
-      <header className="flex justify-center items-center mb-10">
-        <MovieFinderLoggedOut />
-      </header>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+      {/* Movie Finder Header */}
+      <h1
+        className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-500 to-purple-600 cursor-pointer mb-8"
+        onClick={() => router.push('/')}
+      >
+        Movie Finder
+      </h1>
 
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-black">Sign Up</h2>
-        {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+      {/* Dark Mode Toggle */}
+      <button
+        onClick={toggleDarkMode}
+        className="mb-8 px-4 py-2 border rounded bg-white dark:bg-gray-800 text-black dark:text-white"
+      >
+        {isDark ? 'Light Mode' : 'Dark Mode'}
+      </button>
 
-        {/* Form */}
-        <form onSubmit={handleSignup}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-semibold text-black">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 mt-2 border rounded-md"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-semibold text-black">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 mt-2 border rounded-md"
-            />
-          </div>
-          <button type="submit" className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-700">
-            Sign Up
-          </button>
-        </form>
-      </div>
+      {/* Signup Form */}
+      <form onSubmit={handleSignup} className="flex flex-col items-start w-80">
+        <label className="block mb-2 text-gray-900 dark:text-white">Email</label>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="mb-4 px-4 py-2 border rounded w-full text-black dark:text-white dark:bg-gray-700"
+        />
+
+        <label className="block mb-2 text-gray-900 dark:text-white">Password</label>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="mb-4 px-4 py-2 border rounded w-full text-black dark:text-white dark:bg-gray-700"
+        />
+
+        {error && <p className="text-red-500 mb-2">{error}</p>}
+
+        <button
+          type="submit"
+          className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 w-full"
+        >
+          Sign Up
+        </button>
+      </form>
+
+      {/* Login Link */}
+      <p className="mt-4 text-gray-700 dark:text-gray-300">
+        Already have an account?{' '}
+        <span
+          className="text-blue-500 cursor-pointer"
+          onClick={() => router.push('/login')}
+        >
+          Login
+        </span>
+      </p>
     </div>
   );
 }

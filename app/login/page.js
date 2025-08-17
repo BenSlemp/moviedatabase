@@ -2,67 +2,80 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, signInWithEmailAndPassword } from '../../lib/firebase';
-import MovieFinderLoggedOut from '../../components/MovieFinderLoggedOut'; // Import the logged-out component
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../lib/firebase'; // your firebase.js
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(null);
-  const router = useRouter();
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      // Sign in with email and password
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/home'); // Redirect to home page after successful login
-    } catch (error) {
-      setErrorMessage(error.message); // Show error message if login fails
+      router.push('/home'); // go to home after login
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-8">
-      {/* Display the MovieFinderLoggedOut component */}
-      <header className="flex justify-center items-center mb-10">
-        <MovieFinderLoggedOut />
-      </header>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+      {/* Movie Finder Header */}
+      <h1
+        className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-500 to-purple-600 cursor-pointer mb-8"
+        onClick={() => router.push('/')}
+      >
+        Movie Finder
+      </h1>
 
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-black">Login</h2>
-        {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
-
-        {/* Form */}
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-semibold text-black">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 mt-2 border rounded-md"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-semibold text-black">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 mt-2 border rounded-md"
-            />
-          </div>
-          <button type="submit" className="w-full py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-            Login
-          </button>
-        </form>
+      {/* Dark Mode Toggle */}
+      <div className="mb-8">
+        <button className="px-4 py-2 border rounded">Toggle Dark Mode</button>
       </div>
+
+      {/* Login Form */}
+      <form onSubmit={handleLogin} className="flex flex-col items-start w-80">
+        <label className="block mb-2 text-gray-900 dark:text-white">Email</label>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="mb-4 px-4 py-2 border rounded w-full text-black dark:text-white dark:bg-gray-700"
+        />
+
+        <label className="block mb-2 text-gray-900 dark:text-white">Password</label>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="mb-4 px-4 py-2 border rounded w-full text-black dark:text-white dark:bg-gray-700"
+        />
+
+        {error && <p className="text-red-500 mb-2">{error}</p>}
+
+        <button
+          type="submit"
+          className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 w-full"
+        >
+          Login
+        </button>
+      </form>
+
+      {/* Signup Link */}
+      <p className="mt-4 text-gray-700 dark:text-gray-300">
+        Don't have an account?{' '}
+        <span
+          className="text-blue-500 cursor-pointer"
+          onClick={() => router.push('/signup')}
+        >
+          Sign Up
+        </span>
+      </p>
     </div>
   );
 }
