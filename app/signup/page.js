@@ -44,7 +44,7 @@ export default function Signup() {
         className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-500 to-purple-600 cursor-pointer mb-8"
         onClick={() => router.push('/')}
       >
-        Movie Finder
+        Book Finder
       </h1>
 
       {/* Dark Mode Toggle */}

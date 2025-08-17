@@ -14,7 +14,7 @@ export default function MovieFinderLoggedOut() {
       className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-500 to-purple-600 cursor-pointer"
       onClick={handleClick}
     >
-      Movie Finder
+      Book Finder
     </h1>
   );
 }

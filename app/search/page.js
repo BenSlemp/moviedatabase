@@ -24,7 +24,9 @@ export default function SearchPage() {
 
   const searchBooks = async () => {
     if (!query) return;
-    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`
+    );
     const data = await res.json();
     setResults(data.items || []);
   };
@@ -32,9 +34,13 @@ export default function SearchPage() {
   const saveBook = (book) => {
     const exists = savedBooks.find(b => b.id === book.id);
     if (exists) return;
+
     const newSaved = [...savedBooks, book];
     setSavedBooks(newSaved);
     localStorage.setItem('savedBooks', JSON.stringify(newSaved));
+
+    // Alert when a book is saved
+    alert(`"${book.volumeInfo.title}" has been saved!`);
   };
 
   return (
@@ -71,7 +77,11 @@ export default function SearchPage() {
         {results.map((book) => (
           <div key={book.id} className="border rounded-lg p-4 shadow-md flex flex-col">
             {book.volumeInfo.imageLinks?.thumbnail && (
-              <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} className="mb-4 mx-auto" />
+              <img
+                src={book.volumeInfo.imageLinks.thumbnail}
+                alt={book.volumeInfo.title}
+                className="mb-4 mx-auto"
+              />
             )}
             <h2 className="font-bold text-lg mb-2">{book.volumeInfo.title}</h2>
             <p className="italic mb-2">{book.volumeInfo.authors?.join(', ')}</p>
